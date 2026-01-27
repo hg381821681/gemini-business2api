@@ -49,7 +49,7 @@
                   v-model="localSettings.basic.proxy_for_auth"
                   type="text"
                   class="w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm"
-                  placeholder="http://127.0.0.1:7890"
+                  placeholder="http://127.0.0.1:7890 | no_proxy=localhost,127.0.0.1"
                 />
                 <div class="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                   <span>聊天操作代理</span>
@@ -59,8 +59,15 @@
                   v-model="localSettings.basic.proxy_for_chat"
                   type="text"
                   class="w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm"
-                  placeholder="http://127.0.0.1:7890"
+                  placeholder="http://127.0.0.1:7890 | no_proxy=localhost,127.0.0.1"
                 />
+                <div class="rounded-2xl border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+                  <p>格式示例：</p>
+                  <p class="mt-1 font-mono">http://127.0.0.1:7890</p>
+                  <p class="mt-1 font-mono">http://user:pass@127.0.0.1:7890</p>
+                  <p class="mt-1 font-mono">socks5h://127.0.0.1:7890 | no_proxy=localhost,127.0.0.1,.local</p>
+                  <p class="mt-1 font-mono">socks5h://user:pass@127.0.0.1:7890 | no_proxy=localhost,127.0.0.1,.local</p>
+                </div>
               </div>
             </div>
 
@@ -119,6 +126,13 @@
                     type="text"
                     class="w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm"
                     placeholder="dk_xxx"
+                  />
+                  <label class="block text-xs text-muted-foreground">默认注册域名（推荐）</label>
+                  <input
+                    v-model="localSettings.basic.register_domain"
+                    type="text"
+                    class="w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm"
+                    placeholder="留空则自动选择"
                   />
                 </template>
 
@@ -212,13 +226,6 @@
                   type="number"
                   min="1"
                   class="w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm"
-                />
-                <label class="block text-xs text-muted-foreground">默认注册域名（推荐）</label>
-                <input
-                  v-model="localSettings.basic.register_domain"
-                  type="text"
-                  class="w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm"
-                  placeholder="留空则自动选择"
                 />
               </div>
             </div>
@@ -446,11 +453,11 @@ watch(settings, (value) => {
     ? next.basic.freemail_domain
     : ''
   next.basic.mail_proxy_enabled = next.basic.mail_proxy_enabled ?? false
-    next.basic.gptmail_base_url = next.basic.gptmail_base_url || 'https://mail.chatgpt.org.uk'
-    next.basic.gptmail_api_key = typeof next.basic.gptmail_api_key === 'string'
-      ? next.basic.gptmail_api_key
-      : ''
-    next.basic.gptmail_verify_ssl = next.basic.gptmail_verify_ssl ?? true
+  next.basic.gptmail_base_url = next.basic.gptmail_base_url || 'https://mail.chatgpt.org.uk'
+  next.basic.gptmail_api_key = typeof next.basic.gptmail_api_key === 'string'
+    ? next.basic.gptmail_api_key
+    : ''
+  next.basic.gptmail_verify_ssl = next.basic.gptmail_verify_ssl ?? true
   next.retry = next.retry || {}
   next.retry.auto_refresh_accounts_seconds = Number.isFinite(next.retry.auto_refresh_accounts_seconds)
     ? next.retry.auto_refresh_accounts_seconds

@@ -70,6 +70,7 @@ from core.account import (
     bulk_update_account_disabled_status as _bulk_update_account_disabled_status,
     bulk_delete_accounts as _bulk_delete_accounts
 )
+from core.proxy_utils import parse_proxy_setting
 
 # 导入 Uptime 追踪器
 from core import uptime as uptime_tracker
@@ -289,8 +290,13 @@ logger.addHandler(memory_handler)
 TIMEOUT_SECONDS = 600
 API_KEY = config.basic.api_key
 ADMIN_KEY = config.security.admin_key
-PROXY_FOR_AUTH = config.basic.proxy_for_auth
-PROXY_FOR_CHAT = config.basic.proxy_for_chat
+_proxy_auth, _no_proxy_auth = parse_proxy_setting(config.basic.proxy_for_auth)
+_proxy_chat, _no_proxy_chat = parse_proxy_setting(config.basic.proxy_for_chat)
+PROXY_FOR_AUTH = _proxy_auth
+PROXY_FOR_CHAT = _proxy_chat
+_NO_PROXY = ",".join(filter(None, {_no_proxy_auth, _no_proxy_chat}))
+if _NO_PROXY:
+    os.environ["NO_PROXY"] = _NO_PROXY
 BASE_URL = config.basic.base_url
 SESSION_SECRET_KEY = config.security.session_secret_key
 SESSION_EXPIRE_HOURS = config.session.expire_hours
@@ -1498,8 +1504,13 @@ async def admin_update_settings(request: Request, new_settings: dict = Body(...)
 
         # 更新全局变量（实时生效）
         API_KEY = config.basic.api_key
-        PROXY_FOR_AUTH = config.basic.proxy_for_auth
-        PROXY_FOR_CHAT = config.basic.proxy_for_chat
+        _proxy_auth, _no_proxy_auth = parse_proxy_setting(config.basic.proxy_for_auth)
+        _proxy_chat, _no_proxy_chat = parse_proxy_setting(config.basic.proxy_for_chat)
+        PROXY_FOR_AUTH = _proxy_auth
+        PROXY_FOR_CHAT = _proxy_chat
+        _NO_PROXY = ",".join(filter(None, {_no_proxy_auth, _no_proxy_chat}))
+        if _NO_PROXY:
+            os.environ["NO_PROXY"] = _NO_PROXY
         BASE_URL = config.basic.base_url
         LOGO_URL = config.public_display.logo_url
         CHAT_URL = config.public_display.chat_url
